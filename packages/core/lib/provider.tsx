@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { DefaultPrimitiveToken } from './colors/color-type';
 
 export type ThemeMode = 'light' | 'dark' | 'high-contrast' | 'system';
 
-export type PrimitiveToken = {};
+export type PrimitiveToken = {
+  [key in keyof typeof DefaultPrimitiveToken]: string;
+};
 
 export type SemanticToken = {};
 
@@ -73,7 +76,7 @@ export const ContextProvider: React.FC<{
 
   const context: ContextProps = {
     token: {
-      primitive: { ...token.primitive },
+      primitive: { ...DefaultPrimitiveToken, ...token.primitive },
       semantic: { ...token.semantic },
       component: { ...token.component },
     },
