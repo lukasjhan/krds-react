@@ -40,6 +40,21 @@ export type ContextProps = {
 
 export const Context = React.createContext<ContextProps>({} as ContextProps);
 
+const getLocale = (initial?: Locale): Locale => {
+  const locale = localStorage.getItem('locale') as Locale | null;
+  return locale || initial || 'ko';
+};
+
+const getTextSize = (initial?: TextSize): TextSize => {
+  const textSize = localStorage.getItem('textSize') as TextSize | null;
+  return textSize || initial || 'medium';
+};
+
+const getTheme = (initial?: ThemeMode): ThemeMode => {
+  const theme = localStorage.getItem('theme') as ThemeMode | null;
+  return theme || initial || 'system';
+};
+
 export const ContextProvider: React.FC<{
   token: DesignTokenProps;
   mode?: ThemeMode;
@@ -47,10 +62,10 @@ export const ContextProvider: React.FC<{
   textSize?: TextSize;
   children: React.ReactNode;
 }> = ({ token, mode, locale, textSize, children }) => {
-  const [themeMode, setThemeMode] = useState<ThemeMode>(mode || 'system');
-  const [contextLocale, setLocale] = useState<Locale>(locale || 'ko');
+  const [themeMode, setThemeMode] = useState<ThemeMode>(getTheme(mode));
+  const [contextLocale, setLocale] = useState<Locale>(getLocale(locale));
   const [contextTextSize, setTextSize] = useState<TextSize>(
-    textSize || 'medium',
+    getTextSize(textSize),
   );
 
   const changeTheme = (mode: ThemeMode) => {
@@ -76,7 +91,18 @@ export const ContextProvider: React.FC<{
         break;
       }
     }
+    localStorage.setItem('theme', mode);
     setThemeMode(mode);
+  };
+
+  const changeTextSize = (textSize: TextSize) => {
+    localStorage.setItem('textSize', textSize);
+    setTextSize(textSize);
+  };
+
+  const changeLocale = (locale: Locale) => {
+    localStorage.setItem('locale', locale);
+    setLocale(locale);
   };
 
   const context: ContextProps = {
@@ -89,8 +115,8 @@ export const ContextProvider: React.FC<{
     locale: contextLocale,
     textSize: contextTextSize,
     setThemeMode: changeTheme,
-    setLocale: (locale) => setLocale(locale),
-    setTextSize: (textSize) => setTextSize(textSize),
+    setLocale: changeLocale,
+    setTextSize: changeTextSize,
   };
 
   return <Context.Provider value={context}>{children}</Context.Provider>;
