@@ -42,11 +42,16 @@ export const Context = React.createContext<ContextProps>({} as ContextProps);
 
 export const ContextProvider: React.FC<{
   token: DesignTokenProps;
+  mode?: ThemeMode;
+  locale?: Locale;
+  textSize?: TextSize;
   children: React.ReactNode;
-}> = ({ token, children }) => {
-  const [themeMode, setThemeMode] = useState<ThemeMode>('system');
-  const [locale, setLocale] = useState<Locale>('ko');
-  const [textSize, setTextSize] = useState<TextSize>('medium');
+}> = ({ token, mode, locale, textSize, children }) => {
+  const [themeMode, setThemeMode] = useState<ThemeMode>(mode || 'system');
+  const [contextLocale, setLocale] = useState<Locale>(locale || 'ko');
+  const [contextTextSize, setTextSize] = useState<TextSize>(
+    textSize || 'medium',
+  );
 
   const changeTheme = (mode: ThemeMode) => {
     switch (mode) {
@@ -81,8 +86,8 @@ export const ContextProvider: React.FC<{
       component: { ...token.component },
     },
     mode: themeMode,
-    locale: locale,
-    textSize: textSize,
+    locale: contextLocale,
+    textSize: contextTextSize,
     setThemeMode: changeTheme,
     setLocale: (locale) => setLocale(locale),
     setTextSize: (textSize) => setTextSize(textSize),
